@@ -1,0 +1,18 @@
+# SpaceMouse Enterprise
+SUBSYSTEM=="usb", ATTRS{idVendor}=="256f", ATTRS{idProduct}=="c633", SYMLINK+="input/SpaceMouseEnterprise", GROUP="plugdev", MODE="0660"
+
+# CadMouse
+KERNEL=="hidraw*", ATTRS{idVendor}=="256f", ATTRS{idProduct}=="c650", GROUP="plugdev", MODE="0660"
+
+# The CadMouse settings are volatile and are lost at reboot,
+# so we run this command to set them when the device is plugged in.
+# This requires cadmousectl to be installed (https://https://github.com/lachs0r/cadmousectl)
+KERNEL=="hidraw*", ATTRS{idVendor}=="256f", ATTRS{idProduct}=="c650", RUN+="/usr/bin/cadmousectl -l 1 -p 1000 -r wheel:extra -s 40 -S 1"
+
+
+# Additional rules to control spacenavd on insertion of a SpaceNavigator device
+#SUBSYSTEM=="usb", ACTION=="add", ATTRS{manufacturer}=="3Dconnexion", ATTRS{product}=="Space Navigator", RUN+="/etc/init.d/spacenavd --quiet start"
+#SUBSYSTEM=="usb", ACTION=="remove", ATTRS{manufacturer}=="3Dconnexion", ATTRS{product}=="Space Navigator", RUN+="/etc/init.d/spacenavd stop"
+
+SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="256f", ATTRS{idProduct}=="c633", RUN+="logger udev would start spacenavd"
+SUBSYSTEM=="usb", ACTION=="remove", ATTRS{idVendor}=="256f", ATTRS{idProduct}=="c633", RUN+="logger udev would stop spacenavd"

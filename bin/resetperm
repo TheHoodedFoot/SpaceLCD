@@ -1,0 +1,3 @@
+#!/bin/sh
+sudo chgrp plugdev \
+	$(lsusb | grep 256f:c633 | awk '{print "/dev/bus/usb/" $2 "/" $4}' | rev | cut -c 2- | rev)

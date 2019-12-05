@@ -1,0 +1,6 @@
+[submodule "sub/nanosvg"]
+	path = sub/nanosvg
+	url = https://github.com/memononen/nanosvg.git
+[submodule "sub/Unity"]
+	path = sub/Unity
+	url = https://github.com/ThrowTheSwitch/Unity.git

@@ -1,0 +1,4 @@
+#!/bin/sh
+case "" in
+	rebase) exec .hooks/post-merge ;;
+esac

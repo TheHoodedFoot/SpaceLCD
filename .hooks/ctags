@@ -1,0 +1,56 @@
+#!/bin/zsh
+set -e
+
+DEBUG=true
+
+TAGS_FILE=".git/tags"
+EXTRA_TAGS_FILE=".git/tagsextra"
+
+trap "rm -f ${TAGS_FILE}.$$" EXIT
+trap "rm -f ${EXTRA_TAGS_FILE}.$$" EXIT
+
+GIT_ROOT=`git rev-parse --show-toplevel`
+EXTRA_DIRS_FILE=${GIT_ROOT}/.ctags_extra_dirs
+
+CURRENT_DIR=${GIT_ROOT}
+
+if [ -f ${EXTRA_DIRS_FILE} ]; then
+	EXTRA_DIRS=("${(@f)$(cat ${EXTRA_DIRS_FILE})}")
+	[ ${DEBUG} ] && echo -e "\nExtra dirs file found\n"
+fi
+
+[ ${DEBUG} ] && echo -e "Updating ${TAGS_FILE}...\n"
+cd ${GIT_ROOT}
+ctags --fields=+l --tag-relative=yes -Rf${TAGS_FILE}.$$ --exclude=.git --exclude=sub --c-kinds=+p
+mv ${TAGS_FILE}.$$ ${TAGS_FILE}
+
+# Only update the extra dirs file if it is too old or doesn't exist
+if [ -f ${EXTRA_DIRS_FILE} ]; then
+	if [ -f ${EXTRA_TAGS_FILE} ]; then
+		# if [ $( date -r ${EXTRA_TAGS_FILE} +%s ) -gt $( date -d -7days +%s ) ]; then
+			# [ ${DEBUG} ] && echo -e "${EXTRA_TAGS_FILE} is less than 7 days old. Not updating.\n"
+			[ ${DEBUG} ] && echo -e "${EXTRA_TAGS_FILE} found. Not updating (run make clean to force update).\n"
+			exit 0
+		# fi
+	fi
+
+	[ ${DEBUG} ] && echo -e "Updating ${EXTRA_TAGS_FILE}...\n"
+	rm -f ${CURRENT_DIR}/${EXTRA_TAGS_FILE}
+	for EXTRA_DIR in ${EXTRA_DIRS[@]}
+	do
+		if [ -d ${EXTRA_DIR} ]; then
+			[ ${DEBUG} ] && echo "Processing directory ${EXTRA_DIR}"
+			CURRENT_DIR=`pwd`
+			pushd ${EXTRA_DIR}
+			ctags --append --fields=+l --tag-relative=yes -Rf${CURRENT_DIR}/${EXTRA_TAGS_FILE}.$$ --c-kinds=+p
+			popd
+		else
+			if [ -f ${EXTRA_DIR} ]; then
+				# Is a file, not a directory, so no recursion
+				[ ${DEBUG} ] && echo "Processing file ${EXTRA_DIR}"
+				ctags --append --fields=+l --tag-relative=yes -f${CURRENT_DIR}/${EXTRA_TAGS_FILE}.$$ --c-kinds=+p ${EXTRA_DIR}
+			fi
+		fi
+	done
+	mv ${EXTRA_TAGS_FILE}.$$ ${EXTRA_TAGS_FILE}
+fi

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+RED="\e[31m"
+GREEN="\e[32m"
+WHITE="\e[39m"
+
+FILES_PATTERN='*.{c,h}'
+#FILES_PATTERN='\.(js|coffee)(\..+)?$'
+FORBIDDEN='-e arse'
+
+function unstash() {
+	STASH=$(git stash list | grep ${STASH_NAME} | awk '{print $1}' | rev | cut -c 2- | rev)
+	echo -e $GREEN "Popping stash ${STASH_NAME}" $WHITE
+	git stash pop $STASH
+
+	if [[ ! -z "$(git stash list)" ]]
+	then
+		echo -e $RED "Warning: the stash list is not empty." $WHITE
+	fi
+}
+
+function checkforbidden() {
+	# Check for forbidden patterns and abort
+	git diff --cached --name-only | \
+	    grep -E "$FILES_PATTERN" | \
+	    GREP_COLOR='4;5;37;41' xargs grep --color --with-filename -n -E ${FORBIDDEN} && \
+	    echo COMMIT REJECTED Found forbidden references. Please remove them before commiting && \
+	    exit 1
+}
+
+if [ ! -z "$FILES_PATTERN" ] && [ ! -z "$FORBIDDEN" ]
+then
+	checkforbidden
+fi
+
+make clean
+make -j$(nproc) test
+TEST_RESULT=$?
+
+if [[ ${TEST_RESULT} -ne 0 ]]
+then
+	# unstash
+	exit 1
+else
+	# TODO: add any files changed by make format
+	git stash drop || /bin/true
+fi

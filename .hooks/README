@@ -1,0 +1,5 @@
+Don't use symlinks in this directory, because they cause errors in the Windows virtual machines
+
+To activate this hooks directory:
+
+	git config --local --add core.hooksPath .hooks

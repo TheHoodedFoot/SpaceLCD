@@ -1,0 +1,14 @@
+<inkscape-extension>
+    <_name>SpaceExplorer Export</_name>
+    <id>id.spaceexplorer.export.jpg</id>
+    <dependency type="executable" location="extensions">spacelcd.py</dependency>
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="Export" />
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">spacelcd.py</command>
+    </script>
+</inkscape-extension>
