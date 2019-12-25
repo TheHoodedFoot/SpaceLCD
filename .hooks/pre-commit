@@ -33,6 +33,7 @@ then
 	checkforbidden
 fi
 
+make format
 make clean
 make -j$(nproc) test
 TEST_RESULT=$?

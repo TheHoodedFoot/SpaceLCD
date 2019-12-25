@@ -1,27 +1,45 @@
 # SpaceLCD
 
-## Subtitle
+![SpaceLCD logo](/res/img/logo.svg)
 
-![Photo showing SpaceLCD logo](/img/lcd_photo.jpg)
+**SpaceLCD** displays SVG images on the SpaceExplorer Enterprise 3D mouse. It can also contol the LCD brightness.
 
-**SpaceLCD** displays SVG or PNG images on the SpaceExplorer Enterprise 3D mouse. It can also contol the LCD brightness.
+## Getting Started
 
-## Dependencies
 
-SpaceLCD requires libusb to control the 3D mouse, and also zlib to compress the images. Basic SVG support is provided by [NanoSVG](https://github.com/memononen/nanosvg), which is included. If you wish to additionally display PNG images, libpng is also needed.
 
-## Usage
+### Prerequisites
 
-splcd [-b] [-c] [-v] [-l brightness] [-r] (<file.svg>|<file.png>|<file.raw>)
--r reset
--l set lcd brightness
+SpaceLCD requires libusb to control the 3D mouse, librsvg to parse the SVG and also zlib to compress the images.
 
-The -w flag prevents parsing of image data, and instead transfers the raw file as a bulk USB message. The -W flag performs the same function but additionally disables some sanity checks on the data. 
+Optional requirements are [swig](http://www.swig.org) for generating the Python bindings, and [Unity](http://www.throwtheswitch.org/unity) for running the unit tests.
 
-The -r flag sends the reset signal to the mouse, which will revert the display to the boot logo. This can sometimes prevent the need to power-cycle the device if it receives corrupted data.
+### Installing
 
-The -l flag sets the brightness of the LCD backlight. Valid values are in the range 0-100, although the actual 
+Clone the repository and build the library and Python module:
 
+```
+git clone --recursive https://github.com/TheHoodedFoot/spacelcd.git
+cd spacelcd
+make
+```
+
+### Permissions
+
+Spacelcd needs write permissions for the SpaceMouse. There are some example udev rules included.
+
+## Code Example
+
+~~~{.py}
+import spacelcd
+
+with open ("logo.svg", "r") as svgfile:
+    svg=svgfile.readlines()
+
+spacelcd.svgtolcd(svg[0], spacelcd.scroll.left)
+~~~
+
+![Photo showing SpaceLCD logo](/res/img/photo.jpg)
 ## Background
 
 The SpaceMouse Enterprise has a 640x150 pixel display with 16-bit R5G6B5 colour support. Images are sent to the display with a 512-byte header, followed by the bitmap, which is compressed using raw deflate.
@@ -34,103 +52,43 @@ The official 3DConnexion driver has some support for animation, which is not cur
 
 SpaceLCD has only been tested using one SpaceExplorer Enterprise, with USB ID 256f:c633, bought as part of the SpaceMouse Enterprise Kit 3DX-700058.
 
+The header uses a 16-bit value to hold the length of the compressed bitmap, limiting its size to 65535 bytes.
+
 Operating system support is currently GNU/Linux only.
 
-## Endianness Alert
+## Using the SpaceMouse Enterprise with as a 3d mouse with spacenavd
 
-Because this code has only been developed on an x86 system, the endianness of 16-bit words has probably been taken for granted in several places, so it may work incorrectly on another architecture. Something for a future fix.
-
-## Notes
-
-USB (brightness)
-	bmrequest: 0x21
-	brequest: 9
-	wvalue: 0x0311
-	windex: 1
-	wlength: 2
-	data fragment: 1100 (off) 1107 (dim) 1160 (very bright) 1164 (max)
-
-USB (change lcd graphics)
-	URB_CONTROL
-		bmrequest: 0x21
-		brequest: 9
-		wvalue: 0x0314
-		windex: 1
-		wlength: 5
-		data fragment: 14fcff071c
-	URB_BULK
-		words are little-endian
-		180f start of bulk header (512 bytes)
-		next two bytes are size of payload following first 512 bytes (also byte 29/30)
-		3e1a 2dff common
-		110f complete redraw
-		180f partial redraw of titles?
-		1805 a360
-USB_CONTROL
-	0x0f,0x01 perhaps flips the display to show the alternate bitmap buffer
-
-Main body after first 512 bytes:
-	eb2b ee1b
-		change ee1b to ee1c changes the grey colour
-		then pixel data?
-
-		28 1c 85 a3 70 14 8e c2 51 38 0a 47 e1
-Splash screen:
-	reset
-	make (block_whole_screen_no_scroll)
-	shutdown
-
-To enable libusb debugging
-	: libusb_set_option(NULL, LIBUSB_OPTION_LOG_LEVEL, * LIBUSB_LOG_LEVEL_DEBUG); 
-
-The data may be compressed using gzip compression.
-
-Create a bitmap, save as 565 rgb, dd skip=70 if=<file.bmp> bs=1 status=none | gzip -c
-
-{ printf "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x00"; dd skip=512 if=/tmp/<file> bs=1 status=none count=128; } > /tmp/file
-
-{ printf "\x78\x9c"; dd if=bytes/wholechrome.bulk bs=1 count=8 status=none skip=512; } | ./zpipe -d | xxd
-
-lcd image converter
-
-binwalk -X <file>
-
-## Unbinding from USB HID
-
-dmesg to get the hid-generic number XXXX:XXXX:XXXX.XXXX
-
-Then
-
-sudo sh -c 'echo -n "XXXX:XXXX:XXXX.XXXX" > /sys/bus/hid/drivers/hid-generic/unbind
-
-## Screen Resolution
-
-640 x 144, 16-bit bgr
-
-## To swap little/big endian
-
-dd conv=swab
-
-## Byte Meanings
-
-0x00: Screen change type. 0x11 = instant, 0x14 = down, 0x15 = up, 0x16 = left, 0x17 = right, 0x18 is unknown but related to partial update of screen
-0x01: 0x0f
-0x02-0x03(little-endian): The length of the data stream starting from byte 512 (mirrored in bytes 0x1c/0x1d)
-0x04-0x0a: zero?
-0x0e-0x0f: 0x000f
-0x28-0x29:The only bytes that differ between two partial screen changes
-
-pre-0x8e73: 0x02 0x0100 0x0000
-0x40-0x200: 0x8e73 repeated
+The current version of [spacenavd](http://spacenav.sourceforge.net), 0.6, does not include the USB vendor and product ids for the SpaceMouse Enterprise, so although SpaceLCD can control the display, the device itself will not work as a 3d mouse. A patch for spacenavd is included [here](/res/etc/add_spaceexplorer_enterprise.patch) which adds the SpaceMouse Enterprise as a recognised device. The patch also blacklists the CadMouse, which is a regular mouse that comes as part of the SpaceMouse Enterprise kit, which spacenavd mistakenly recognises as a 3d mouse.
 
 ## Bugs
 
-## Example
+### Device Lockup
 
-~~~{.py}
-import sys
-~~~
+The SpaceMouse is vulnerable to corrupted data, which can cause the display to become unresponsive, requiring a hard reset. SpaceLCD will also generate corrupt data under certain circumstances, which is being investigated.
 
-## Copyright and Licencing
+### Endianness Issues
 
-spacelcd is released under [zlib license](LICENSE.txt) 
+Because this code has only been developed on an x86 system, the endianness of 16-bit words has probably been taken for granted in several places, so it may work incorrectly on another architecture.
+
+## Inkscape Plugin
+
+The code also includes a plugin for Inkscape version 1.0, which requires [scour](http://github.com/scour-project/scour) to be installed. The plugin uploads the current Inkscape drawing to the SpaceMouse, which is useful for developing a GUI.
+
+## Built With
+
+* [libusb](https://libusb.info) - Portable, userspace USB access
+* [zlib](https://www.zlib.net) - Compression algorithm used by the SpaceMouse
+* [librsvg](https://github.com/GNOME/librsvg) - Used to generate a bitmap from SVG data
+
+## Authors
+
+* **Andrew Black** - *Initial work* - [github](https://github.com/TheHoodedFoot)
+
+## License
+
+This project is licensed under the zlib License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* spacenavd / libspnav
+* zlib example

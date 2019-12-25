@@ -1,9 +1,9 @@
+#include "libspacelcd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "bgr.h"
 #include "deflate.h"
-#include "splcd.h"
 #include "svg.hpp"
 #include "usb.h"
 

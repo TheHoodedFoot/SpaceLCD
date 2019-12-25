@@ -15,14 +15,28 @@ import unittest
 class Testspacelcd(unittest.TestCase):
 
     # def setUp(self):
-    #     self.spacelcd = spacelcd.t_spacelcd()
+    #     self.spacelcd = spacelcd.reset()
 
-    def test_sendReceive(self):
-        svg = "<svg width=\"640\" height=\"150\" version=\"1.1\"><rect x=\"20\" \"y=\"20\" width=\"600\" height=\"110\" ry=\"0\" " "fill=\"#ff8800\"/></svg>"
+    def test_01_stringSVGRed(self):
+        svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#ff0000"/></svg>'
+        spacelcd.svgtolcd(svg, spacelcd.scroll.none)
 
-        # print(svg, file=sys.stderr)
-        self.spacelcd = spacelcd.svgtolcd(svg, 0x15)
-        return None
+    def test_02_stringSVGGreen(self):
+        svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#004400"/></svg>'
+        spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+
+    def test_03_stringSVGBlue(self):
+        svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#0000ff"/></svg>'
+        spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+
+    def test_x_fileSVG(self):
+        with open("../res/img/logo.svg", "r") as svgfile:
+            svg = svgfile.readlines()[0]
+            spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+
+    # def test_stringSVGGreenCorrupt(self):
+    #     svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#005500"/></svg>'
+    #     spacelcd.svgtolcd(svg, spacelcd.scroll.none)
 
     # def tearDown(self):
     #     return None

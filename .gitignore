@@ -12,3 +12,4 @@ src/*.so*
 spacelcd.py
 spacelcd_wrap.cxx
 src/splcdcmd
+*pcapng
