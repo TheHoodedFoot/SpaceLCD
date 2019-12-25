@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   viewBox="0 0 640 150"
+   id="svg29"
+   sodipodi:docname="inkscape_template.svg"
+   inkscape:version="1.0beta2 (9b9055c1b, 2019-12-11)">
+  <metadata
+     id="metadata33">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     inkscape:document-rotation="0"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview31"
+     showgrid="false"
+     inkscape:current-layer="svg29" />
+  <defs
+     id="defs21">
+    <radialGradient
+       id="b"
+       cx="283"
+       cy="29"
+       r="20"
+       gradientTransform="matrix(0.62,0.97,-1,0.66,-327,-256)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#71b2f8"
+         offset="0"
+         id="stop11" />
+      <stop
+         stop-color="#002795"
+         offset="1"
+         id="stop13" />
+    </radialGradient>
+    <radialGradient
+       id="a"
+       cx="271"
+       cy="34"
+       r="20"
+       gradientTransform="matrix(1.1,0.27,-0.75,3.1,-471,-148)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#ff6d0f"
+         offset="0"
+         id="stop16" />
+      <stop
+         stop-color="#ff1000"
+         offset="1"
+         id="stop18" />
+    </radialGradient>
+  </defs>
+  <rect
+     y="0"
+     x="0"
+     height="150"
+     width="640"
+     id="rect2844"
+     style="fill:#2e3436;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill-opacity:1" />
+</svg>

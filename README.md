@@ -1,6 +1,6 @@
 # SpaceLCD
 
-![SpaceLCD logo](/res/img/logo.svg)
+![SpaceLCD logo](/res/img/logo.png)
 
 **SpaceLCD** displays SVG images on the SpaceExplorer Enterprise 3D mouse. It can also contol the LCD brightness.
 
@@ -20,7 +20,7 @@ Clone the repository and build the library and Python module:
 
 ```
 git clone --recursive https://github.com/TheHoodedFoot/spacelcd.git
-cd spacelcd
+cd spacelcd/src
 make
 ```
 
@@ -72,7 +72,7 @@ Because this code has only been developed on an x86 system, the endianness of 16
 
 ## Inkscape Plugin
 
-The code also includes a plugin for Inkscape version 1.0, which requires [scour](http://github.com/scour-project/scour) to be installed. The plugin uploads the current Inkscape drawing to the SpaceMouse, which is useful for developing a GUI.
+The code also includes a plugin for Inkscape version 1.0, which requires [scour](http://github.com/scour-project/scour) to be installed. The plugin uploads the current Inkscape drawing to the SpaceMouse, which is useful when prototyping GUI elements.
 
 ## Built With
 
@@ -86,9 +86,9 @@ The code also includes a plugin for Inkscape version 1.0, which requires [scour]
 
 ## License
 
-This project is licensed under the zlib License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the zlib License
 
 ## Acknowledgments
 
 * spacenavd / libspnav
-* zlib example
+* zlib
