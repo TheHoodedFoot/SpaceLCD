@@ -144,11 +144,17 @@ debug:
 #######################################################################
 
 format: formatpython
-	clang-format -style=file -i *.c *.h *.cpp || /bin/true
+	clang-format -style=file -i *.{c,h,cpp,hpp} || /bin/true
 
 formatpython:
-	autopep8 --ignore=E402 --aggressive --aggressive -i $(FORMAT_FILES_PYTHON)
+	autopep8 --global-config=$(ROOT_DIR)/res/cfg/pycodestyle --aggressive --aggressive --in-place --jobs -1 $(FORMAT_FILES_PYTHON)
 	flake8 --ignore=E402 --max-complexity=10 --show-source $(FORMAT_FILES_PYTHON) || /bin/true
+
+unexpand:
+	for file in $(FORMAT_FILES_PYTHON)
+	do
+		unexpand -t4 $${file} > spacestotabs.tmp && mv spacestotabs.tmp $${file}
+	done
 
 
 #######################################################################

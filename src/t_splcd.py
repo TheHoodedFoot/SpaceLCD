@@ -15,7 +15,7 @@ import unittest
 class Testspacelcd(unittest.TestCase):
 
     # def setUp(self):
-    #     self.spacelcd = spacelcd.reset()
+    #	  self.spacelcd = spacelcd.reset()
 
     def test_01_stringSVGRed(self):
         svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#ff0000"/></svg>'
@@ -35,11 +35,11 @@ class Testspacelcd(unittest.TestCase):
             spacelcd.svgtolcd(svg, spacelcd.scroll.none)
 
     # def test_stringSVGGreenCorrupt(self):
-    #     svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#005500"/></svg>'
-    #     spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+    #	  svg = '<svg version="1.1" viewBox="0 0 640 150"><rect x="20" y="20" width="600" height="110" fill="#005500"/></svg>'
+    #	  spacelcd.svgtolcd(svg, spacelcd.scroll.none)
 
     # def tearDown(self):
-    #     return None
+    #	  return None
 
 
 if __name__ == '__main__':

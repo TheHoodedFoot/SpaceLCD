@@ -2,7 +2,7 @@
 
 ![SpaceLCD logo](/res/img/logo.png)
 
-**SpaceLCD** displays SVG images on the SpaceExplorer Enterprise 3D mouse. It can also contol the LCD brightness.
+**SpaceLCD** displays SVG images on the SpaceMouse Enterprise 3D mouse. It can also contol the LCD brightness.
 
 ## Getting Started
 
@@ -13,6 +13,8 @@
 SpaceLCD requires libusb to control the 3D mouse, librsvg to parse the SVG and also zlib to compress the images.
 
 Optional requirements are [swig](http://www.swig.org) for generating the Python bindings, and [Unity](http://www.throwtheswitch.org/unity) for running the unit tests.
+
+> **Note:** During development, [Bear](https://github.com/rizsotto/Bear.git) and [ctags](https://ctags.io/) are in use in places in the Makefile. You can choose to either install the packages or comment out those areas.
 
 ### Installing
 
@@ -50,7 +52,7 @@ SpaceLCD is only used to control the display; [spacenavd](http://spacenav.source
 
 The official 3DConnexion driver has some support for animation, which is not currently understood and therefore not implemented here. The proprietary driver can also use partial screen updates, whereas SpaceLCD uploads the full screen each time.
 
-SpaceLCD has only been tested using one SpaceExplorer Enterprise, with USB ID 256f:c633, bought as part of the SpaceMouse Enterprise Kit 3DX-700058.
+SpaceLCD has only been tested using one SpaceMouse Enterprise, with USB ID 256f:c633, bought as part of the SpaceMouse Enterprise Kit 3DX-700058.
 
 The header uses a 16-bit value to hold the length of the compressed bitmap, limiting its size to 65535 bytes.
 
