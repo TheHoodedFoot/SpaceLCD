@@ -2,8 +2,6 @@
 __pycache__
 bin/reset
 compile_commands.json
-res/dat/*_test.bulk
-res/pcap
 src/bgr
 src/rsvgtest
 src/splcd
@@ -12,7 +10,6 @@ src/*.so*
 spacelcd.py
 spacelcd_wrap.cxx
 src/splcdcmd
-*pcapng
 .deps
 AUTHORS
 COPYING
