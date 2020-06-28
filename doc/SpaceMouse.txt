@@ -1,0 +1,19 @@
+Build spacenavd with patches
+
+Add the SpaceMouse Enterprise to the list of usb vendor/id pairs.
+
+Remove the entire section that searches by the word "Connexion" from match_usbdev() in dev.c
+
+Prevent the SpaceMouse from controlling the mouse cursor with:
+
+	xinput --float "3Dconnexion SpaceMouse Enterprise"
+
+Build git version 11a43b8b
+
+
+
+Buttons in FreeCad
+------------------
+
+There is a limit of 20 buttons hardcoded into ButtonModel::GetLabel in the file
+DlgCustomizeSpaceball.cpp
