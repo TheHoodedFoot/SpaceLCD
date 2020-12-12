@@ -21,7 +21,7 @@ Optional requirements are [swig](http://www.swig.org) for generating the Python 
 Clone the repository and build the library and Python module:
 
 ```
-git clone --recursive https://git.47or.com/thf/spacelcd.git
+git clone --recursive https://github.com/TheHoodedFoot/SpaceLCD.git
 cd spacelcd/src
 make
 ```
@@ -60,7 +60,7 @@ Operating system support is currently GNU/Linux only.
 
 ## Using the SpaceMouse Enterprise with as a 3d mouse with spacenavd
 
-The current version of [spacenavd](http://spacenav.sourceforge.net), 0.6, does not include the USB vendor and product ids for the SpaceMouse Enterprise, so although SpaceLCD can control the display, the device itself will not work as a 3d mouse. A patch for spacenavd is included [here](/res/etc/add_spaceexplorer_enterprise.patch) which adds the SpaceMouse Enterprise as a recognised device. The patch also blacklists the CadMouse, which is a regular mouse that comes as part of the SpaceMouse Enterprise kit, which spacenavd mistakenly recognises as a 3d mouse.
+The current version of [spacenavd](http://spacenav.sourceforge.net), 0.6, does not include the USB vendor and product ids for the SpaceMouse Enterprise, so although SpaceLCD can control the display, the device itself will not work as a 3d mouse. A patch for spacenavd is included [here](/res/etc/add_spaceexplorer_enterprise.patch) which adds the SpaceMouse Enterprise as a recognised device.
 
 In addition, spacenavd/libspnav do not currently report all of the buttons correctly. An event input test program (evdevtest.py) is included which shows that all buttons can be uniquely identified, but the necessary changes to spacenavd or libspnav have not yet been examined.
 
