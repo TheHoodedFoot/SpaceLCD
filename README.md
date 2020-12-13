@@ -22,8 +22,15 @@ Clone the repository and build the library and Python module:
 
 ```
 git clone --recursive https://github.com/TheHoodedFoot/SpaceLCD.git
-cd spacelcd/src
+cd SpaceLCD/src
 make
+```
+
+You should be able to test that SpaceLCD is working by issuing the following commands, which turn the LCD on and off respectively:
+
+```
+make lcdon
+make lcdoff
 ```
 
 ### Permissions

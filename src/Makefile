@@ -13,8 +13,8 @@ SONAME=$(LIBRARY).$(LIBVER)
 
 PYTHON_MODULE = _spacelcd.so
 
-CC      = ccache gcc
-CXX	= ccache g++
+# CC      = ccache gcc
+# CXX	= ccache g++
 CFLAGS = -Wall -ggdb3 -O0
 
 # Unit testing
@@ -56,7 +56,7 @@ FORMAT_FILES_PYTHON = t_splcd.py
 #######################################################################
 
 test:	$(TEST_BINARIES) $(PYTHON_MODULE)
-	$(ROOT_DIR)/bin/testrunner.sh $(TEST_BINARIES) $(TEST_PYTHON)
+	$(ROOT_DIR)/res/bin/testrunner.sh $(TEST_BINARIES) $(TEST_PYTHON)
 
 all: $(LIBRARY_SOURCES) $(BINARY_SOURCES)
 	make $(LIBRARY)
