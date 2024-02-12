@@ -2,10 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bgr.h"
 #include "deflate.h"
 #include "render.h"
 #include "usb.h"
+
+void
+addheader(uint8_t *usbdata, int compressed_length, int scroll)
+{ /* Fill in header bytes for USB bulk data */
+
+	usbdata[0] = scroll;
+	usbdata[1] = 0x0f;
+	usbdata[2] = compressed_length;
+	usbdata[3] = compressed_length >> 8;
+}
 
 int
 svgtolcd(const char *svg, int scroll)

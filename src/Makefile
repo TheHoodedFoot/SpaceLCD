@@ -1,6 +1,6 @@
 ROOT_DIR=$(shell git rev-parse --show-toplevel)
 
-LIBRARY_SOURCES:=libspacelcd.c render.c usb.c bgr.c deflate.c
+LIBRARY_SOURCES:=libspacelcd.c render.c usb.c deflate.c
 LIBRARY_OBJS = $(patsubst %.c,%.o,$(LIBRARY_SOURCES))
 BINARY_SOURCES = splcdcmd.c
 BINARY_OBJS = $(patsubst %.c,%.o,$(BINARY_SOURCES))
@@ -17,7 +17,7 @@ PYTHON_MODULE = _spacelcd.so
 CFLAGS = -Wall -ggdb3 -O0
 
 # Unit testing
-TESTS = bgr deflate render
+TESTS = deflate render
 TEST_SOURCES = $(addsuffix .c,$(addprefix t_,$(TESTS)))
 TEST_OBJS = $(patsubst %.c,%.o,$(TEST_SOURCES))
 TEST_BINARIES = $(patsubst %.c,%_x,$(TEST_SOURCES))
@@ -72,7 +72,7 @@ all: $(LIBRARY_SOURCES) $(BINARY_SOURCES)
 		$(shell pkgconf --cflags librsvg-2.0) \
 		$(shell pkgconf --cflags libusb-1.0)
 
-$(LIBRARY):  render.o bgr.o deflate.o usb.o libspacelcd.o
+$(LIBRARY):  render.o deflate.o usb.o libspacelcd.o
 	$(CXX) -fPIC -shared -I.  $^ -Wl,-soname=$(SONAME) -o $(SONAME) $(shell pkgconf --libs zlib) $(shell pkgconf --libs librsvg-2.0) $(shell pkgconf --libs libusb-1.0)
 	ln -sf $(SONAME) $@
 
