@@ -38,11 +38,6 @@ TEST(BgrGroup, BgrTest)
 	TEST_ASSERT_EQUAL(0x00, bgrdata[2]);
 	TEST_ASSERT_EQUAL(0xf8, bgrdata[3]);
 
-	swapendianness(&bgrdata[0]);
-
-	TEST_ASSERT_EQUAL(0xf8, bgrdata[0]);
-	TEST_ASSERT_EQUAL(0x00, bgrdata[1]);
-
 	addheader(&bgrdata[0], 0x1234, 0x11);
 
 	TEST_ASSERT_EQUAL(0x11, bgrdata[0]);

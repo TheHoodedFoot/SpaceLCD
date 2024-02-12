@@ -13,23 +13,11 @@ rgbtobgr(uint8_t *buffer, int size)
 }
 
 void
-swapendianness(uint8_t *bytes)
-{
-	uint8_t byte = *bytes;
-	*(bytes) = *(bytes + 1);
-	*(bytes + 1) = byte;
-}
-
-void
 addheader(uint8_t *usbdata, int compressed_length, int scroll)
 { /* Fill in header bytes for USB bulk data */
 
-	/* Endianness alert */
-	*((uint16_t *)usbdata) = 0x0f << 8 | scroll;
-	*((uint16_t *)usbdata + 1) = compressed_length;
-
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	swapendianness(usbdata);
-	swapendianness(usbdata + 2);
-#endif
+	*usbdata++ = scroll;
+	*usbdata++ = 0x0f;
+	*usbdata++ = compressed_length;
+	*usbdata   = compressed_length >> 8;
 }
