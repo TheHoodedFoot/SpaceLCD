@@ -4,7 +4,7 @@
 #include "bgr.h"
 #include "deflate.h"
 #include "splcd.h"
-#include "svg.hpp"
+#include "svg.h"
 #include "usb.h"
 
 int

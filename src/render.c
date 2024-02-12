@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "svg.hpp"
+#include "render.h"
 
 #include <librsvg/rsvg.h>
 

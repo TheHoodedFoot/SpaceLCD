@@ -1,8 +1,7 @@
 ROOT_DIR=$(shell git rev-parse --show-toplevel)
 
-LIBRARY_SOURCES:=libspacelcd.c svg.cpp usb.c bgr.c deflate.c #$(wildcard *.cpp)
+LIBRARY_SOURCES:=libspacelcd.c render.c usb.c bgr.c deflate.c
 LIBRARY_OBJS = $(patsubst %.c,%.o,$(LIBRARY_SOURCES))
-LIBRARY_OBJS += $(patsubst %.cpp,%.o,$(LIBRARY_SOURCES))
 BINARY_SOURCES = splcdcmd.c
 BINARY_OBJS = $(patsubst %.c,%.o,$(BINARY_SOURCES))
 
@@ -18,7 +17,7 @@ PYTHON_MODULE = _spacelcd.so
 CFLAGS = -Wall -ggdb3 -O0
 
 # Unit testing
-TESTS = bgr deflate svg
+TESTS = bgr deflate render
 TEST_SOURCES = $(addsuffix .c,$(addprefix t_,$(TESTS)))
 TEST_OBJS = $(patsubst %.c,%.o,$(TEST_SOURCES))
 TEST_BINARIES = $(patsubst %.c,%_x,$(TEST_SOURCES))
@@ -47,7 +46,7 @@ DEBUG_TARGET ?= $(shell tail -n1 .debugcmd)
 # CXXFLAGS += -fstandalone-debug # for lldb
 
 # Formatting
-FORMAT_FILES = *.{h,c,cpp}
+FORMAT_FILES = *.{h,c}
 FORMAT_FILES_PYTHON = t_splcd.py
 
 
@@ -68,17 +67,12 @@ all: $(LIBRARY_SOURCES) $(BINARY_SOURCES)
 #                       Binaries and Libraries                        #
 #######################################################################
 
-%.o:	%.cpp
-	$(CXX) -fPIC -o $@ -c $^ $(shell pkgconf --cflags glib-2.0) \
-		$(shell pkgconf --cflags librsvg-2.0) \
-		$(shell pkgconf --cflags libusb-1.0)
-
 %.o:	%.c
 	$(CXX) -fPIC -o $@ -c $^ $(shell pkgconf --cflags glib-2.0) \
 		$(shell pkgconf --cflags librsvg-2.0) \
 		$(shell pkgconf --cflags libusb-1.0)
 
-$(LIBRARY):  svg.o bgr.o deflate.o usb.o libspacelcd.o
+$(LIBRARY):  render.o bgr.o deflate.o usb.o libspacelcd.o
 	$(CXX) -fPIC -shared -I.  $^ -Wl,-soname=$(SONAME) -o $(SONAME) $(shell pkgconf --libs zlib) $(shell pkgconf --libs librsvg-2.0) $(shell pkgconf --libs libusb-1.0)
 	ln -sf $(SONAME) $@
 
@@ -90,8 +84,8 @@ $(BINARY): $(LIBRARY)
 #                             Unit Tests                              #
 #######################################################################
 
-# svgtest: svg.o t_svg.c $(UNITY_OBJS)
-# 	$(CXX) $(INCFLAGS) $(UNITY_OBJS) svg.o t_svg.c -o t_svg_x $(shell pkgconf --libs librsvg-2.0)
+# svgtest: render.o t_render.c $(UNITY_OBJS)
+# 	$(CXX) $(INCFLAGS) $(UNITY_OBJS) render.o t_render.c -o t_render_x $(shell pkgconf --libs librsvg-2.0)
 
 # t_splcd_x: t_splcd.c $(LIBRARY)
 # 	$(CXX) -I. $(shell pkgconf --cflags libusb-1.0) -Wl,-rpath=. $(LIBRARY) t_splcd.c -o $@
@@ -144,7 +138,7 @@ debug:
 #######################################################################
 
 format: formatpython
-	clang-format -style=file -i *.{c,h,cpp,hpp} || /bin/true
+	clang-format -style=file -i *.{c,h} || /bin/true
 
 formatpython:
 	autopep8 --global-config=$(ROOT_DIR)/res/cfg/pycodestyle --aggressive --aggressive --in-place --jobs -1 $(FORMAT_FILES_PYTHON)

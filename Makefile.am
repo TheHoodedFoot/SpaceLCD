@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libspacelcd.la
-libspacelcd_la_SOURCES = src/libspacelcd.c src/svg.cpp src/usb.c src/bgr.c src/deflate.c
+libspacelcd_la_SOURCES = src/libspacelcd.c src/render.c src/usb.c src/bgr.c src/deflate.c
 libspacelcd_la_LDFLAGS = $(ZLIB_LIBS) $(LIBRSVG_LIBS) $(LIBUSB_LIBS)
 libspacelcd_la_CFLAGS = $(ZLIB_CFLAGS) $(LIBRSVG_CFLAGS) $(LIBUSB_CFLAGS)
 libspacelcd_la_CXXFLAGS = $(ZLIB_CFLAGS) $(LIBRSVG_CFLAGS) $(LIBUSB_CFLAGS)
