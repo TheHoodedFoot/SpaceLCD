@@ -10,7 +10,7 @@ extern "C" {
 #define BITMAP_BPP 2
 #define BITMAP_BYTES BITMAP_WIDTH *BITMAP_HEIGHT *BITMAP_BPP
 
-int svgtobgr565(const char *svg, const int size, void *buffer);
+int svgtorgb565(const char *svg, const int size, void *buffer);
 
 #ifdef __cplusplus
 }

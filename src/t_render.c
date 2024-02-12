@@ -16,8 +16,8 @@ TEST(RenderGroup, ParseSVGTest)
 		"x=\"1\" y=\"0\" width=\"638\" height=\"150\" ry=\"0\" "
 		"fill=\"#ffffff\"/></svg>";
 
-	void *buffer = malloc(BITMAP_BYTES);
-	svgtobgr565(whiterect, strlen(whiterect), buffer);
+	uint8_t *buffer = (uint8_t*)malloc(BITMAP_BYTES);
+	svgtorgb565(whiterect, strlen(whiterect), buffer);
 
 	TEST_ASSERT_EQUAL(0x00, *(buffer));
 	TEST_ASSERT_EQUAL(0xff, *(buffer + 2));
