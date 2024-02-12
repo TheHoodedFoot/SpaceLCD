@@ -16,10 +16,7 @@ svgtolcd(const char *svg, int scroll)
 	memset(deflated_buffer, 0, SPLCD_HEADER_SIZE);
 
 	/* Create bitmap from SVG */
-	svgtorgb565(svg, strlen((const char *)svg), (char *)bitmap_buffer);
-
-	/* Convert to bgr */
-	rgbtobgr(bitmap_buffer, BITMAP_BYTES);
+	svgtobgr565(svg, strlen((const char *)svg), bitmap_buffer);
 
 	/* Compress */
 	int compressed_size =
