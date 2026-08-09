@@ -18,4 +18,11 @@ int sendcontrol(libusb_device_handle *handle, unsigned char *bytes, int size,
 void claiminterfaces(libusb_device_handle *handle);
 void releaseinterfaces(libusb_device_handle *handle);
 
+/* Persistent connection API (for animation / rapid updates) */
+libusb_context *lcd_libusb_init(void);
+libusb_device_handle *lcd_open(libusb_context *ctx);
+int lcd_send_bulk(libusb_device_handle *handle, unsigned char *data,
+		  int size);
+void lcd_close(libusb_device_handle *handle, libusb_context *ctx);
+
 #endif /* end of include guard: USB_H_GXGA8TOL */

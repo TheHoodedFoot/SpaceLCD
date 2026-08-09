@@ -16,7 +16,7 @@ TEST(RenderGroup, ParseSVGTest)
 		"x=\"1\" y=\"0\" width=\"638\" height=\"150\" ry=\"0\" "
 		"fill=\"#ffffff\"/></svg>";
 
-	uint8_t *buffer = (uint8_t*)malloc(BITMAP_BYTES);
+	uint8_t *buffer = (uint8_t *)malloc(BITMAP_BYTES);
 	svgtorgb565(whiterect, strlen(whiterect), buffer);
 
 	TEST_ASSERT_EQUAL(0x00, *(buffer));
@@ -28,11 +28,9 @@ TEST(RenderGroup, ParseSVGTest)
 }
 
 
-TEST_GROUP_RUNNER(RenderGroup)
-{ /* Add a line below for each unit test */
+TEST_GROUP_RUNNER(RenderGroup) { /* Add a line below for each unit test */
 
-	RUN_TEST_CASE(RenderGroup, ParseSVGTest);
-}
+				 RUN_TEST_CASE(RenderGroup, ParseSVGTest); }
 
 static void
 runAllTests()

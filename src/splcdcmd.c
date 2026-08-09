@@ -22,7 +22,7 @@
 #define SPNENTERPRISE_VENDOR_ID 0x256f
 #define SPNENTERPRISE_PRODUCT_ID 0xc633
 
-static int bulk_flag = 1, verbose_flag = 0;
+static int bulk_flag = 1, verbose_flag = 0, partial_flag = 0;
 
 void
 claiminterfaces(libusb_device_handle *handle)
@@ -33,9 +33,8 @@ claiminterfaces(libusb_device_handle *handle)
 		if (status != LIBUSB_SUCCESS) {
 			printf("Could not claim interface %d\n", i);
 		}
-
-		libusb_reset_device(handle);
 	}
+	libusb_reset_device(handle);
 }
 
 void
@@ -74,7 +73,7 @@ sendcontrol(libusb_device_handle *handle, unsigned char *bytes, int size,
 }
 
 int
-filetousb(FILE *fhandle, int bulk, int wvalue)
+filetousb(FILE *fhandle, int bulk, int wvalue, int partial)
 {
 	assert(fhandle);
 	int r = libusb_init(NULL);
@@ -99,10 +98,20 @@ filetousb(FILE *fhandle, int bulk, int wvalue)
 
 	unsigned char usbdata[USB_PACKET_MAX + 1];
 	int bytes_read;
+	int offset = 0; /* track position in file for header modification */
 
 	/* Read at most 64 bytes */
 	while (((bytes_read = fread((char *)&usbdata, 1, USB_PACKET_MAX,
 				    fhandle)))) {
+		/* If --partial flag set, modify the first 512-byte header */
+		if (partial && bulk && offset == 0) {
+			usbdata[0] = 0x18; /* PARTIAL effect */
+			if (bytes_read > 12) usbdata[12] = 0x00;
+			if (bytes_read > 13) usbdata[13] = 0x00;
+			if (bytes_read > 14) usbdata[14] = 0x00;
+			if (bytes_read > 15) usbdata[15] = 0x0f;
+		}
+
 		/* Send to bulk or contol as required */
 		if (bulk)
 			sendbulk(spnav_handle, (unsigned char *)&usbdata,
@@ -110,6 +119,8 @@ filetousb(FILE *fhandle, int bulk, int wvalue)
 		else
 			sendcontrol(spnav_handle, (unsigned char *)&usbdata,
 				    bytes_read, wvalue);
+
+		offset += bytes_read;
 	}
 
 	releaseinterfaces(spnav_handle);
@@ -166,7 +177,7 @@ png_bytep *row_pointers;
 void
 read_png_file(char *file_name)
 {
-	char header[8];  // 8 is the maximum size that can be checked
+	char header[8];	 // 8 is the maximum size that can be checked
 
 	/* open file and test for it being a png */
 	FILE *fp = fopen(file_name, "rb");
@@ -266,6 +277,7 @@ main(int argc, char **argv)
 			{"verbose", no_argument, &verbose_flag, 1},
 			{"bulk", no_argument, &bulk_flag, 1},
 			{"control", no_argument, &bulk_flag, 0},
+			{"partial", no_argument, &partial_flag, 1},
 			{"help", no_argument, 0, 'h'},
 			{"wvalue", no_argument, 0, 'w'},
 			{0, 0, 0, 0}};
@@ -298,6 +310,8 @@ main(int argc, char **argv)
 				puts("    -c control mode");
 				puts("    -w control wvalue (0x0311 "
 				     "brightness, 0x0314 other)");
+				puts("    -p partial mode (alpha blend, "
+				     "zeros=transparent)");
 
 			case 'v':
 				verbose_flag = 1;
@@ -333,11 +347,11 @@ main(int argc, char **argv)
 				printf("Error opening file\n");
 				return -1;
 			}
-			filetousb(fhandle, bulk_flag, wvalue);
+			filetousb(fhandle, bulk_flag, wvalue, partial_flag);
 			fclose(fhandle);
 		}
 	} else {
-		filetousb(stdin, bulk_flag, wvalue);
+		filetousb(stdin, bulk_flag, wvalue, partial_flag);
 	}
 
 	return 0;

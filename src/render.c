@@ -7,8 +7,8 @@ rgbtobgr(guint8 *dst, guint8 *src, gsize size)
 { /* Convert from R5G6B5 to B5G6R5 */
 
 	for (int i = 0; i < size; i += 2) {
-		*dst++ = (src[i+1] >> 3) | (src[i]   & 0xe0);
-		*dst++ = (src[i]   << 3) | (src[i+1] & 0x07);
+		*dst++ = (src[i + 1] >> 3) | (src[i] & 0xe0);
+		*dst++ = (src[i] << 3) | (src[i + 1] & 0x07);
 	}
 }
 
@@ -34,7 +34,8 @@ svgtorgb565(const char *svg, int size, void *buffer)
 	rsvg_handle_render_cairo(handle, cr);
 	if (cairo_status(cr)) return 2;
 
-	rgbtobgr((guint8 *)buffer, cairo_image_surface_get_data(surface), BITMAP_BYTES);
+	rgbtobgr((guint8 *)buffer, cairo_image_surface_get_data(surface),
+		 BITMAP_BYTES);
 
 	cairo_destroy(cr);
 	cairo_surface_destroy(surface);

@@ -23,6 +23,10 @@ const uint16_t start01[] = {0x0311, 0x1164};
 const uint16_t start02[] = {0x0313, 0x131a};
 
 int svgtolcd(const char *svg, int scroll);
+int svgtolcd_partial(const char *svg, int scroll);
+int lcd_send_bitmap(const uint16_t *bitmap, int effect);
+int lcd_send_bitmap_tiled(const uint16_t *bitmap, int effect, int num_tiles);
+int lcd_animate(const uint16_t **bitmaps, int count, int fps, int effect);
 /* void setbrightness(int level); */
 /* void startup(); */
 /* void shutdown(); */

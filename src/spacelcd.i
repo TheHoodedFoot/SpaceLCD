@@ -8,5 +8,6 @@
 
 %pythoncode %{
 class scroll:
-	none, down, up, left, right = { 0x11, 0x14, 0x15, 0x16, 0x17 }
+	"""Scroll/effect constants for LCD updates."""
+	none, down, up, left, right, partial = { 0x11, 0x14, 0x15, 0x16, 0x17, 0x18 }
 %}

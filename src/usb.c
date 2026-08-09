@@ -17,9 +17,9 @@ claiminterfaces(libusb_device_handle *handle)
 		if (status != LIBUSB_SUCCESS) {
 			fprintf(stderr, "Could not claim interface %d\n", i);
 		}
-
-		libusb_reset_device(handle);
 	}
+	/* Reset once after all interfaces claimed, not per-interface */
+	libusb_reset_device(handle);
 }
 
 void
@@ -153,4 +153,49 @@ filetousb(FILE *fhandle, int bulk, int wvalue)
 	libusb_close(spnav_handle);
 	libusb_exit(NULL);
 	return 0;
+}
+
+/* ---- Persistent connection API (for animation / rapid updates) ---- */
+
+libusb_context *
+lcd_libusb_init(void)
+{
+	libusb_context *ctx = NULL;
+	if (libusb_init(&ctx) < 0) {
+		fprintf(stderr, "lcd_libusb_init: libusb_init failed\n");
+		return NULL;
+	}
+	return ctx;
+}
+
+libusb_device_handle *
+lcd_open(libusb_context *ctx)
+{
+	libusb_device_handle *handle = libusb_open_device_with_vid_pid(
+		ctx, SPNENTERPRISE_VENDOR_ID, SPNENTERPRISE_PRODUCT_ID);
+	if (!handle) {
+		fprintf(stderr, "lcd_open: failed to open device\n");
+		return NULL;
+	}
+	libusb_set_auto_detach_kernel_driver(handle, 1);
+	claiminterfaces(handle);
+	return handle;
+}
+
+int
+lcd_send_bulk(libusb_device_handle *handle, unsigned char *data, int size)
+{ /* Send entire frame in a single bulk transfer (libusb handles
+     packetization) */
+	int transferred;
+	libusb_bulk_transfer(handle, 0x01, data, size, &transferred,
+			     USB_TIMEOUT);
+	return (transferred == size) ? 0 : 1;
+}
+
+void
+lcd_close(libusb_device_handle *handle, libusb_context *ctx)
+{
+	releaseinterfaces(handle);
+	libusb_close(handle);
+	libusb_exit(ctx);
 }

@@ -2,7 +2,7 @@
 
 ![SpaceLCD logo](/res/img/logo.png)
 
-**SpaceLCD** displays SVG images on the SpaceMouse Enterprise 3D mouse. It can also contol the LCD brightness.
+**SpaceLCD** displays SVG images on the SpaceMouse Enterprise 3D mouse. It can also control the LCD brightness and perform partial (alpha-blend) screen updates and animations.
 
 ## Getting Started
 
@@ -22,15 +22,18 @@ Clone the repository and build the library and Python module:
 
 ```
 git clone --recursive https://github.com/TheHoodedFoot/SpaceLCD.git
-cd SpaceLCD/src
+cd SpaceLCD
+./configure
 make
 ```
 
-You should be able to test that SpaceLCD is working by issuing the following commands, which turn the LCD on and off respectively:
+You should be able to test that SpaceLCD is working by issuing the following commands, which turn the LCD on, sends a test graphic, resets the device, and turns the LCD off respectively:
 
 ```
-make lcdon
-make lcdoff
+make -C src lcdon
+make -C src logo
+make -C src reset
+make -C src lcdoff
 ```
 
 ### Permissions
@@ -42,26 +45,77 @@ Spacelcd needs write permissions for the SpaceMouse. There are some example udev
 ~~~{.py}
 import spacelcd
 
-with open ("logo.svg", "r") as svgfile:
-    svg=svgfile.readlines()
+with open("logo.svg", "r") as svgfile:
+    svg = svgfile.read()
 
-spacelcd.svgtolcd(svg[0], spacelcd.scroll.left)
+# Full-screen replace (existing content overwritten)
+spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+
+# Alpha-blend overlay (existing content preserved where SVG is transparent)
+spacelcd.svgtolcd_partial(svg, 0)
 ~~~
 
 ![Photo showing SpaceLCD logo](/res/img/photo.jpg)
 ## Background
 
-The SpaceMouse Enterprise has a 640x150 pixel display with 16-bit R5G6B5 colour support. Images are sent to the display with a 512-byte header, followed by the bitmap, which is compressed using raw deflate.
+The SpaceMouse Enterprise has a 640×150 pixel display with 16-bit BGR565 colour support (bits 0–4: Red, bits 5–10: Green, bits 11–15: Blue). Images are sent to the display with a 512-byte header, followed by the bitmap, which is compressed using raw deflate (zlib).
 
 SpaceLCD is only used to control the display; [spacenavd](http://spacenav.sourceforge.net) and [libspnav](http://spacenav.sourceforge.net) are required in order to read the motion data from the mouse.
 
-## Limitations
+## Partial Updates and Animation
 
-The official 3DConnexion driver has some support for animation, which is not currently understood and therefore not implemented here. The proprietary driver can also use partial screen updates, whereas SpaceLCD uploads the full screen each time.
+The display supports two update modes controlled by the first byte of the 512-byte header:
+
+- **`0x11` (FULL / instant)** — replaces the entire framebuffer.
+- **`0x18` (PARTIAL / alpha blend)** — blends with the existing framebuffer. Zero pixels are transparent (left unchanged on screen), non-zero pixels are opaque (written).
+
+### Library API
+
+```c
+/* Full-screen replace */
+svgtolcd(svg_data, EFFECT_CUT);          /* 0x11 — replaces entire screen */
+
+/* Alpha-blend partial update (zeros = transparent) */
+svgtolcd_partial(svg_data, 0);           /* 0x18 — blends with existing screen */
+
+/* Send a raw 640×150 BGR565 bitmap */
+lcd_send_bitmap(bitmap, EFFECT_CUT);     /* full replace */
+lcd_send_bitmap(bitmap, EFFECT_PARTIAL); /* alpha blend */
+
+/* Large bitmaps: split into 4 horizontal tile updates */
+lcd_send_bitmap_tiled(bitmap, EFFECT_PARTIAL, 4);
+
+/* Animation: send frames at a target frame rate */
+lcd_animate(frame_bitmaps, num_frames, 30, EFFECT_PARTIAL);
+```
+
+### Python example
+
+```python
+import spacelcd
+
+with open("logo.svg", "r") as f:
+    svg = f.read()
+
+# Full-screen replace
+spacelcd.svgtolcd(svg, spacelcd.scroll.none)
+
+# Alpha-blend overlay (existing screen content preserved)
+spacelcd.svgtolcd_partial(svg, 0)
+```
+
+### CLI
+
+```
+# Send a .bulk capture file as a partial (alpha-blend) update
+splcdcmd -p capture.bulk
+```
+
+## Limitations
 
 SpaceLCD has only been tested using one SpaceMouse Enterprise, with USB ID 256f:c633, bought as part of the SpaceMouse Enterprise Kit 3DX-700058.
 
-The header uses a 16-bit value to hold the length of the compressed bitmap, limiting its size to 65535 bytes.
+The header uses a 16-bit value to hold the length of the compressed bitmap, limiting its size to 65535 bytes. For images that compress above this limit, `lcd_send_bitmap_tiled()` splits the bitmap into horizontal strips sent as sequential partial updates.
 
 Operating system support is currently GNU/Linux only.
 
@@ -71,15 +125,15 @@ The current version of [spacenavd](http://spacenav.sourceforge.net), 0.6, does n
 
 In addition, spacenavd/libspnav do not currently report all of the buttons correctly. An event input test program (evdevtest.py) is included which shows that all buttons can be uniquely identified, but the necessary changes to spacenavd or libspnav have not yet been examined.
 
-## Bugs
+## Known Issues
 
 ### Device Lockup
 
-The SpaceMouse is vulnerable to corrupted data, which can cause the display to become unresponsive, requiring a hard reset. SpaceLCD will also generate corrupt data under certain circumstances, which is being investigated.
+The SpaceMouse is vulnerable to corrupted data, which can cause the display to become unresponsive, requiring a hard power cycle. This can be triggered by rapid successive USB open/reset/close cycles during animation. To avoid this, use `lcd_animate()` for rapid frame sequences rather than calling `svgtolcd()` in a tight loop.
 
-### Endianness Issues
+### Endianness
 
-Because this code has only been developed on an x86 system, the endianness of 16-bit words has probably been taken for granted in several places, so it may work incorrectly on another architecture.
+The pixel format is BGR565 stored as little-endian 16-bit words. This has been verified on x86; behaviour on big-endian architectures has not been tested.
 
 ## Inkscape Plugin
 
@@ -94,6 +148,7 @@ The code also includes a plugin for Inkscape version 1.0, which requires [scour]
 ## Authors
 
 * **Andrew Black** - *Initial work* - [github](https://github.com/TheHoodedFoot)
+* **Qwen 3.6** - *Partial update work* - Fair play, it saved me a lot of work.
 
 ## License
 

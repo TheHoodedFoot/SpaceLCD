@@ -8,7 +8,7 @@ extern "C" {
 #define BITMAP_WIDTH 640
 #define BITMAP_HEIGHT 150
 #define BITMAP_BPP 2
-#define BITMAP_BYTES BITMAP_WIDTH *BITMAP_HEIGHT *BITMAP_BPP
+#define BITMAP_BYTES BITMAP_WIDTH * BITMAP_HEIGHT * BITMAP_BPP
 
 int svgtorgb565(const char *svg, const int size, void *buffer);
 
