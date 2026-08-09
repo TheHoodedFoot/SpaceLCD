@@ -42,11 +42,15 @@ clean-local:
 	-test -f _spacelcd.so && rm -f _spacelcd.so
 
 # Build the Python extension .so directly (libtool CXX tag produces only .a)
+# Statically link the PIC .o files of libspacelcd so no LD_LIBRARY_PATH is needed
 _spacelcd.so: _spacelcd_la-spacelcd_wrap.lo libspacelcd.la
 	$(CXX) -shared -fPIC \
 		.libs/_spacelcd_la-spacelcd_wrap.o \
+		.libs/libspacelcd_la-libspacelcd.o \
+		.libs/libspacelcd_la-render.o \
+		.libs/libspacelcd_la-usb.o \
+		.libs/libspacelcd_la-deflate.o \
 		-o .libs/_spacelcd.so \
-		.libs/libspacelcd.so.1.0.0 \
 		$(PYTHON3_LDFLAGS) \
 		$(ZLIB_LIBS) $(LIBRSVG_LIBS) $(LIBUSB_LIBS) \
 		-lstdc++ -lpthread

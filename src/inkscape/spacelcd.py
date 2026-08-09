@@ -2,16 +2,16 @@
 
 import sys
 import os.path
-if not os.path.isfile("/home/thf/projects/spacelcd/src/_spacelcd.so"):
+if not os.path.isfile("/home/thf/projects/SpaceLCD/src/_spacelcd.so"):
     print("The spacelcd python library is not available.", file=sys.stderr)
     exit(1)
 
-sys.path.append("/home/thf/projects/spacelcd/src")
+sys.path.append("/home/thf/projects/SpaceLCD/src")
 
 from _spacelcd import svgtolcd
 
 import inkex.command
-import inkex.svg
+# import inkex.svg
 
 # For duplicating and processing the SVG file
 from subprocess import Popen, PIPE
