@@ -29,7 +29,7 @@ noinst_LTLIBRARIES = _spacelcd.la
 _spacelcd_la_SOURCES = spacelcd_wrap.cxx
 _spacelcd_la_CXXFLAGS = $(PYTHON3_CPPFLAGS) -fPIC
 _spacelcd_la_LDFLAGS = -module -avoid-version -shrext .so
-_spacelcd_la_LIBADD = libspacelcd.la
+_spacelcd_la_LIBADD = libspacelcd.la $(PYTHON3_LDFLAGS)
 
 BUILT_SOURCES = spacelcd_wrap.cxx spacelcd.py
 
@@ -39,6 +39,19 @@ spacelcd_wrap.cxx spacelcd.py: spacelcd.i
 clean-local:
 	-test -f spacelcd_wrap.cxx && rm -f spacelcd_wrap.cxx
 	-test -f spacelcd.py && rm -f spacelcd.py
+	-test -f _spacelcd.so && rm -f _spacelcd.so
+
+# Build the Python extension .so directly (libtool CXX tag produces only .a)
+_spacelcd.so: _spacelcd_la-spacelcd_wrap.lo libspacelcd.la
+	$(CXX) -shared -fPIC \
+		.libs/_spacelcd_la-spacelcd_wrap.o \
+		-o .libs/_spacelcd.so \
+		.libs/libspacelcd.so.1.0.0 \
+		$(PYTHON3_LDFLAGS) \
+		$(ZLIB_LIBS) $(LIBRSVG_LIBS) $(LIBUSB_LIBS) \
+		-lstdc++ -lpthread
+	cp .libs/_spacelcd.so $(srcdir)/_spacelcd.so
+	@echo "Built _spacelcd.so — use: PYTHONPATH=$(srcdir) python3"
 endif
 
 # Unit tests
