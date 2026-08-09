@@ -2,11 +2,14 @@
 
 import sys
 import os.path
-if not os.path.isfile("/home/thf/projects/SpaceLCD/src/_spacelcd.so"):
-    print("The spacelcd python library is not available.", file=sys.stderr)
+
+SPACELCD_DIR = os.path.expanduser("~") + "/projects/SpaceLCD"
+
+if not os.path.isfile(SPACELCD_DIR + "/src/_spacelcd.so"):
+    print("The spacelcd python library is not available (edit SPACELCD_DIR in spacelcd.py and set path to cloned repo)", file=sys.stderr)
     exit(1)
 
-sys.path.append("/home/thf/projects/SpaceLCD/src")
+sys.path.append(SPACELCD_DIR + "/src")
 
 from _spacelcd import svgtolcd
 
