@@ -135,7 +135,9 @@ am__uninstall_files_from_dir = { \
        $(am__cd) "$$dir" && echo $$files | $(am__xargs_n) 40 $(am__rm_f); }; \
   }
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-@HAVE_SWIG_TRUE@_spacelcd_la_DEPENDENCIES = libspacelcd.la
+am__DEPENDENCIES_1 =
+@HAVE_SWIG_TRUE@_spacelcd_la_DEPENDENCIES = libspacelcd.la \
+@HAVE_SWIG_TRUE@	$(am__DEPENDENCIES_1)
 am___spacelcd_la_SOURCES_DIST = spacelcd_wrap.cxx
 @HAVE_SWIG_TRUE@am__spacelcd_la_OBJECTS =  \
 @HAVE_SWIG_TRUE@	_spacelcd_la-spacelcd_wrap.lo
@@ -159,7 +161,6 @@ libspacelcd_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(LDFLAGS) -o $@
 am_send_logo_OBJECTS = send_logo-send_logo.$(OBJEXT)
 send_logo_OBJECTS = $(am_send_logo_OBJECTS)
-am__DEPENDENCIES_1 =
 send_logo_DEPENDENCIES = libspacelcd.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 send_logo_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -633,7 +634,7 @@ EXTRA_DIST = spacelcd.i t_splcd.py $(top_srcdir)/res/bin/testrunner.sh
 @HAVE_SWIG_TRUE@_spacelcd_la_SOURCES = spacelcd_wrap.cxx
 @HAVE_SWIG_TRUE@_spacelcd_la_CXXFLAGS = $(PYTHON3_CPPFLAGS) -fPIC
 @HAVE_SWIG_TRUE@_spacelcd_la_LDFLAGS = -module -avoid-version -shrext .so
-@HAVE_SWIG_TRUE@_spacelcd_la_LIBADD = libspacelcd.la
+@HAVE_SWIG_TRUE@_spacelcd_la_LIBADD = libspacelcd.la $(PYTHON3_LDFLAGS)
 @HAVE_SWIG_TRUE@BUILT_SOURCES = spacelcd_wrap.cxx spacelcd.py
 t_deflate_x_SOURCES = t_deflate.c \
 	$(top_srcdir)/sub/Unity/src/unity.c \
@@ -1570,6 +1571,23 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 @HAVE_SWIG_TRUE@clean-local:
 @HAVE_SWIG_TRUE@	-test -f spacelcd_wrap.cxx && rm -f spacelcd_wrap.cxx
 @HAVE_SWIG_TRUE@	-test -f spacelcd.py && rm -f spacelcd.py
+@HAVE_SWIG_TRUE@	-test -f _spacelcd.so && rm -f _spacelcd.so
+
+# Build the Python extension .so directly (libtool CXX tag produces only .a)
+# Statically link the PIC .o files of libspacelcd so no LD_LIBRARY_PATH is needed
+@HAVE_SWIG_TRUE@_spacelcd.so: _spacelcd_la-spacelcd_wrap.lo libspacelcd.la
+@HAVE_SWIG_TRUE@	$(CXX) -shared -fPIC \
+@HAVE_SWIG_TRUE@		.libs/_spacelcd_la-spacelcd_wrap.o \
+@HAVE_SWIG_TRUE@		.libs/libspacelcd_la-libspacelcd.o \
+@HAVE_SWIG_TRUE@		.libs/libspacelcd_la-render.o \
+@HAVE_SWIG_TRUE@		.libs/libspacelcd_la-usb.o \
+@HAVE_SWIG_TRUE@		.libs/libspacelcd_la-deflate.o \
+@HAVE_SWIG_TRUE@		-o .libs/_spacelcd.so \
+@HAVE_SWIG_TRUE@		$(PYTHON3_LDFLAGS) \
+@HAVE_SWIG_TRUE@		$(ZLIB_LIBS) $(LIBRSVG_LIBS) $(LIBUSB_LIBS) \
+@HAVE_SWIG_TRUE@		-lstdc++ -lpthread
+@HAVE_SWIG_TRUE@	cp .libs/_spacelcd.so $(srcdir)/_spacelcd.so
+@HAVE_SWIG_TRUE@	@echo "Built _spacelcd.so — use: PYTHONPATH=$(srcdir) python3"
 
 # Convenience targets
 .PHONY: lcdon lcdoff reset startup shutdown format formatpython logo

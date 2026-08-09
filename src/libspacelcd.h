@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define X_RESOLUTION 640
 #define Y_RESOLUTION 150
 
@@ -31,5 +35,9 @@ int lcd_animate(const uint16_t **bitmaps, int count, int fps, int effect);
 /* void startup(); */
 /* void shutdown(); */
 /* void reset(); */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* end of include guard: LIBSPACELCD_H_SLHXDJDE */

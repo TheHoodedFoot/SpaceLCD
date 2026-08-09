@@ -25,6 +25,7 @@ git clone --recursive https://github.com/TheHoodedFoot/SpaceLCD.git
 cd SpaceLCD
 ./configure
 make
+make -C src _spacelcd.so # optional Python integration
 ```
 
 You should be able to test that SpaceLCD is working by issuing the following commands, which turn the LCD on, sends a test graphic, resets the device, and turns the LCD off respectively:
